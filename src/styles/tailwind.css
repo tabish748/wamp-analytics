@@ -1,0 +1,29 @@
+
+ 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Allerta&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+.hero-heading {
+    font-family: 'Lora', serif;
+}
+.section-heading {
+    font-family: 'Allerta', sans-serif;
+}
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #406290; /* Replace with the desired color */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #dedede    ; /* Replace with the desired track color */
+  }
+  td {
+    text-transform: capitalize;
+  }
