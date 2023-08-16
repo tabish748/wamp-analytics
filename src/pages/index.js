@@ -62,6 +62,7 @@ export default function Dashboard({
     setStartDate(formatDate(startDate));
     setEndDate(formatDate(endDate));
     setTimeRange("lastWeek");
+    setShowSidebar(false);
   };
 
   const handleLastMonthClick = () => {
@@ -72,6 +73,7 @@ export default function Dashboard({
     setStartDate(formatDate(startDate));
     setEndDate(formatDate(endDate));
     setTimeRange("lastMonth");
+    setShowSidebar(false);
   };
 
   const [timeRange, setTimeRange] = useState(null);
@@ -347,10 +349,12 @@ export default function Dashboard({
 
   const handleStartDateChange = (e) => {
     setStartDate(e.target.value);
+    setShowSidebar(false);
   };
 
   const handleEndDateChange = (e) => {
     setEndDate(e.target.value);
+    setShowSidebar(false);
   };
 
   useEffect(() => {
