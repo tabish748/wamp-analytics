@@ -14,6 +14,8 @@ import PaginatedTable from "@/components/PaginatedTable";
 import Image from "next/image";
 import BackendPaginatedTable from "@/components/BackendPaginatedTable";
 import Loading from "@/components/Loading";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 const userDetailHeadings = [
   "Country",
   "City",
@@ -435,8 +437,37 @@ export default function Dashboard({
     setEndDate(tempEndDate);
   }
 
+  const downloadPDF = () => {
+    const originalOverflow = document.body.style.overflow;
+    const originalHeight = document.body.style.height;
+    document.body.style.overflow = 'visible';
+    document.body.style.height = 'auto';
+
+    const input = document.body;
+    html2canvas(input, {
+        scale: 1,
+        useCORS: true,
+        scrollY: -window.scrollY  // Ensure it starts capturing from the top
+    }).then((canvas) => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.height = originalHeight;
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+        });
+        const imgProps= pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save("download.pdf");
+    });
+}
+
+
+
   return (
-    <div className="flex h-screen bg-gray-200">
+    <div className="flex h-screen bg-gray-200" id="web-page">
       <div
         onClick={toggleSidebar} // Added onClick to hide the sidebar when overlay is clicked
         className={`fixed z-20 inset-0 bg-black opacity-50 transition-opacity ${
@@ -568,6 +599,8 @@ export default function Dashboard({
           <h1 className=" text-2xl sm:text-4xl text-primary-color">
             Analytics Dashboard
           </h1>
+           {/* <button onClick={downloadPDF}>Download PDF</button> */}
+
           <button className="lg:hidden" onClick={toggleSidebar}>
             <AiOutlineMenu size={24} />
           </button>
