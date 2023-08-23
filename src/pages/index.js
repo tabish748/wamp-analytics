@@ -72,6 +72,8 @@ export default function Dashboard({
 
     setStartDate(formatDate(startDate));
     setEndDate(formatDate(endDate));
+    setTempStartDate(formatDate(startDate));
+    setTempEndDate(formatDate(endDate));
     setTimeRange("lastMonth");
     setShowSidebar(false);
   };
@@ -88,6 +90,13 @@ export default function Dashboard({
   });
 
   const [endDate, setEndDate] = useState(formatDate(new Date())); // today
+  const [tempStartDate, setTempStartDate] = useState(() => {
+    // 30 days ago
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return formatDate(date);
+  });
+    const [tempEndDate, setTempEndDate] = useState(formatDate(new Date()));
   const [showSidebar, setShowSidebar] = useState(false);
 
   const [data, setData] = useState(initialData);
@@ -420,6 +429,12 @@ export default function Dashboard({
     { ref: ipListsSectionRef, color: "bg-red-500", label: "IP Lists" },
   ];
 
+  const handleDoneClick = () => 
+  {
+    setStartDate(tempStartDate);
+    setEndDate(tempEndDate);
+  }
+
   return (
     <div className="flex h-screen bg-gray-200">
       <div
@@ -457,6 +472,7 @@ export default function Dashboard({
           >
             <span className="text-2xl">&times;</span>
           </button>
+
         </div>
 
         <nav
@@ -492,12 +508,12 @@ export default function Dashboard({
             <input
               type="date"
               value={startDate}
-              onChange={handleStartDateChange}
+              onChange={e => setTempStartDate(e.target.value)}
               className={`p-2 border rounded-md ${
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              max={endDate} // <-- Set the maximum date for startDate to endDate
+              max={tempEndDate}
               min="2023-01-01" // <-- This sets the minimum date to January 1, 2023
             />
           </div>
@@ -508,15 +524,21 @@ export default function Dashboard({
             <input
               type="date"
               value={endDate}
-              onChange={handleEndDateChange}
+              onChange={e => setTempEndDate(e.target.value)}
               className={`p-2 border rounded-md ${
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              min={startDate} // <-- Set the minimum date for endDate to startDate
+              min={tempStartDate}
               max={maxDate}
             />
           </div>
+          <button 
+          onClick={handleDoneClick}
+          className="bg-primary-color  text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150"
+          >
+                Search
+            </button>
           <button
             onClick={handleLastWeekClick}
             className={`border border-gray-300 px-4 py-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 ${
@@ -556,7 +578,7 @@ export default function Dashboard({
               <h2 className="text-3xl">
                 All Users:
                 <span className="font-bold">
-                  {totalUserData.totalUsers}
+                  {totalUserData?.totalUsers}
                 </span>{" "}
                 <br />
                 <small className="text-sm">(Unique + Returning Users)</small>
@@ -621,7 +643,7 @@ export default function Dashboard({
                   </h3>
                 </div>
 
-                <div className="border p-4 py-8 border-primary-color rounded-md bg-light-primary-color">
+                <div className="border p-4 py-8 border-primary-color rounded-md bg-light-primary-color hidden">
                   <p className="font-semibold  text-center text-white">
                     Users in Last 30 Min
                   </p>

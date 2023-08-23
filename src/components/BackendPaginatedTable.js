@@ -10,15 +10,40 @@ const BackendPaginatedTable = ({
   initialStartDate,
   initialEndDate,
 }) => {
+
+  data = data.map(item => {
+    const {
+        date,
+        IpAddress,
+        ServiceProvider,
+        country,
+        city,
+        ...rest
+    } = item;
+
+    return {
+        date,
+        IpAddress,
+        ServiceProvider,
+        country : country?.name,
+        city,
+        ...rest
+    };
+});
+
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortColumn, setSortColumn] = useState();
+  const [sortColumn, setSortColumn] = useState(data[0] && Object?.keys(data[0])[3]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [currentData, setCurrentData] = useState(data);
   const [totalRecords, setTotalRecords] = useState(0); // Assuming you'd get this from the backend
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate); // Assuming you'd get this from the backend
   const [loading, setLoading] = useState(false); // Introducing loading state
+  
+
+
 
   const EformatDate = (date) => {
     const d = new Date(date);
@@ -61,7 +86,25 @@ const BackendPaginatedTable = ({
       });
 
       let res = apiData?.data;
+      res = res.map(item => {
+        const {
+          date,
+          IpAddress,
+          ServiceProvider,
+          country,
+          city,
+          ...rest
+        } = item;
 
+        return {
+          date,
+          IpAddress,
+          ServiceProvider,
+          country: country?.name || country,
+          city,
+          ...rest
+        };
+      });
       if (sortColumn) {
         res = sortData(res, sortColumn, sortOrder);
       }
@@ -108,16 +151,47 @@ const BackendPaginatedTable = ({
 
     setCurrentData(sortData(currentData, column, newOrder));
   };
-
   const sortData = (dataToSort, column, order) => {
-    let sortedData = [...dataToSort];
-    sortedData.sort((a, b) => {
-      if (a[column] < b[column]) return order === "asc" ? -1 : 1;
-      if (a[column] > b[column]) return order === "asc" ? 1 : -1;
-      return 0;
-    });
-    return sortedData;
-  };
+  let sortedData = [...dataToSort];
+
+  sortedData.sort((a, b) => {
+    let valueA = a[column];
+    let valueB = b[column];
+
+    // Check for empty, null or undefined values for valueA and valueB
+    const isValueAEmpty = valueA === null || valueA === undefined || valueA === "";
+    const isValueBEmpty = valueB === null || valueB === undefined || valueB === "";
+
+    if (isValueAEmpty && isValueBEmpty) {
+      return 0;  // Both are empty, so they are equal
+    } else if (isValueAEmpty) {
+      return 1;  // A is empty, so it goes to the end
+    } else if (isValueBEmpty) {
+      return -1; // B is empty, so it goes to the end
+    }
+
+    // Convert values to numbers, if possible
+    valueA = isNaN(valueA) ? valueA : parseFloat(valueA);
+    valueB = isNaN(valueB) ? valueB : parseFloat(valueB);
+
+    // Determine if values are numbers
+    const isValueANumber = typeof valueA === "number";
+    const isValueBNumber = typeof valueB === "number";
+
+    // If both values are numbers, sort numerically
+    if (isValueANumber && isValueBNumber) {
+      return order === 'asc' ? valueA - valueB : valueB - valueA;
+    } else {
+      // Else, sort as strings
+      return order === 'asc' 
+        ? String(valueA).localeCompare(String(valueB), undefined, {numeric: true})
+        : String(valueB).localeCompare(String(valueA), undefined, {numeric: true});
+    }
+  });
+
+  return sortedData;
+};
+
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -178,14 +252,8 @@ const BackendPaginatedTable = ({
                       {item?.ServiceProvider}
                     </td>
                     <td className="px-5 py-5 border border-gray-200 bg-white text-sm flex gap-1">
-                      <Image
-                        src={item?.flag}
-                        className="w-[20]px"
-                        width={20}
-                        height={20}
-                        alt="flag"
-                      />{" "}
-                      &nbsp;{item?.country?.name}
+                    <Image src={item?.flag} className="w-[20]px" width={20} height={20} alt="flag"/> 
+                    &nbsp;{item?.country}
                     </td>
                     <td className="px-5 py-5 border border-gray-200 bg-white text-sm">
                       {item?.city}

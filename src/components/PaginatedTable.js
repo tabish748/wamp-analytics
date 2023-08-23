@@ -4,15 +4,19 @@ import Image from 'next/image';
 import Utils from '@/libs/utils';
 const PaginatedTable = ({ data, headings, tableTitle }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState(data[0] && Object?.keys(data[0])[1]);
+  const [sortColumn, setSortColumn] = useState(data[0] && Object?.keys(data[0])[6]);
  
-const [sortOrder, setSortOrder] = useState('asc');
+const [sortOrder, setSortOrder] = useState('desc');
 
   const [itemsPerPage, setItemsPerPage] = useState(15); // New state for items per page
 
   const totalPages = Math.ceil(data?.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  data = data.map(item => {
+  const { flag, ...rest } = item;
+  return { ...rest, flag };
+});
 
   let sortedData = [...data];
 if (sortColumn !== null && sortOrder !== null) {
@@ -52,6 +56,7 @@ if (sortColumn !== null && sortOrder !== null) {
   const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleSort = (column) => {
+
   if (sortColumn === column) {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   } else {
@@ -131,10 +136,10 @@ function convertToNumber(input)
       <th
         key={index}
         className="px-5 py-3 border border-gray-200 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
-        onClick={() => handleSort(Object?.keys(data[0])[index + 1] )} // Removing "+1" to correctly target the column
+        onClick={() => handleSort(Object?.keys(data[0])[index] )} 
       >
         {heading} 
-        {sortColumn == Object?.keys(data[0])[index + 1] && (sortOrder == 'asc' ? '↑' : '↓')}
+        {sortColumn == Object?.keys(data[0])[index ] && (sortOrder == 'asc' ? '↑' : '↓')}
       </th>
     ))}
   </tr>
