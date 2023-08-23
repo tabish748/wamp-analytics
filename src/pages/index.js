@@ -538,13 +538,13 @@ export default function Dashboard({
             </label>
             <input
               type="date"
-              value={startDate}
+              value={tempStartDate}
               onChange={e => setTempStartDate(e.target.value)}
               className={`p-2 border rounded-md ${
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              max={tempEndDate}
+              max={endDate}
               min="2023-01-01" // <-- This sets the minimum date to January 1, 2023
             />
           </div>
@@ -554,13 +554,13 @@ export default function Dashboard({
             </label>
             <input
               type="date"
-              value={endDate}
+              value={tempEndDate}
               onChange={e => setTempEndDate(e.target.value)}
               className={`p-2 border rounded-md ${
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              min={tempStartDate}
+              min={startDate}
               max={maxDate}
             />
           </div>
