@@ -544,7 +544,7 @@ export default function Dashboard({
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              max={endDate}
+              max={tempEndDate}
               min="2023-01-01" // <-- This sets the minimum date to January 1, 2023
             />
           </div>
@@ -560,7 +560,7 @@ export default function Dashboard({
                 isDisabled || loading.general ? "cursor-not-allowed" : ""
               }`}
               disabled={isDisabled || loading.general}
-              min={startDate}
+              min={tempStartDate}
               max={maxDate}
             />
           </div>
