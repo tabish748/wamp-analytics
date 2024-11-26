@@ -936,6 +936,7 @@ async function fetchData(url, body = null, method = "POST") {
       headers: body ? { "Content-Type": "application/json" } : {},
       body: body ? JSON.stringify(body) : null,
     });
+    console.log('response', response)
     if (!response.ok) {
       throw new Error("Error fetching data");
     }
